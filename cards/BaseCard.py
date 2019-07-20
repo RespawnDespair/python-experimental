@@ -11,7 +11,10 @@ class BaseCard(object):
         self.driver = driver.rstrip()
         self.device = device.rstrip()
         self.mac=subprocess.Popen(['cat', '/sys/class/net/{0}/address'.format(device)], stdout = subprocess.PIPE).communicate()[0].rstrip()
-        self.name = self.mac.replace(':', '')
+
+        # Because we no longer rename the device this defaults to device name
+        #self.name = self.mac.replace(':', '')
+        self.name = self.device
 
         print('   Set MTU 2304')
         subprocess.check_call(['ifconfig', device, 'mtu', '2304'])
@@ -19,7 +22,8 @@ class BaseCard(object):
         print('   Mac address: {0}'.format(self.mac))
         print('   Rename {0} to {1}'.format(device, self.name))
         
-        subprocess.Popen(['ip', 'link', 'set', self.device, 'name', self.name], stdout = subprocess.PIPE).communicate()[0]
+        # Disabled as i feel this only adds confusion
+        #subprocess.Popen(['ip', 'link', 'set', self.device, 'name', self.name], stdout = subprocess.PIPE).communicate()[0]
         
         self.config = self.getConfig()
         

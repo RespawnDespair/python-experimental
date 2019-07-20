@@ -42,6 +42,7 @@ def main(argv):
 
      cameras = []
      cards = []
+     wifi = []
 
      config.read('cameras.ini')
      camera_sections = config.sections()
@@ -71,15 +72,20 @@ def main(argv):
                driver=subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE,stderr=subprocess.STDOUT).communicate()[0].rstrip()
                print('   Driver type: {0}'.format(driver))
 
+               card = None
                for cardmod in card_modules:
                     if cardmod.fitForDriver(driver):
                          loaded_class = getattr(cardmod, 'Card')
                          card=loaded_class(device, mode)
-
-               card.extendedSetup()
+                         card.extendedSetup()
+                         wifi.append(card)
 
           else:
-               print('Not a WLAN device, leaving it alone')
+               print('Not a known WLAN device, leaving it alone')
+     
+     print("Loaded wifi cards")
+     for wificard in wifi:
+          print(wificard)
 
 def load_card_modules():
      """
@@ -96,7 +102,7 @@ def load_card_modules():
      importlib.import_module('cards')
      modules = []
      for plugin in plugins:
-               if not plugin.startswith('__'):
+               if '__' not in plugin:
                     modules.append(importlib.import_module(plugin, package="cards"))
 
      return modules
