@@ -35,7 +35,7 @@ class BaseCard(object):
     
     def getDataRateConfig(self):
         config = configparser.ConfigParser()
-        config.read('wifi.ini')
+        config.read('datarates.ini')
         
         return config[self.config['datarate']]
 
